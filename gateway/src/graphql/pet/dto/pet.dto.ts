@@ -11,7 +11,7 @@ export class Pet {
   @Field()
   breed: string;
 
-  @Field(() => Int)
+  @Field(() => Int, { nullable: true }) 
   age: number;
 
   @Field({ nullable: true })

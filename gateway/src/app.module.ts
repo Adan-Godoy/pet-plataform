@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './graphql/auth/auth.module';
 import { ClinicalHistoryModule } from './graphql/clinical-history/clinical-history.module';
 import { PetModule } from './graphql/pet/pet.module';
+import { DateTimeScalar } from './common/scalars/date.scalar';
 
 @Module({
   imports: [
@@ -21,6 +22,6 @@ import { PetModule } from './graphql/pet/pet.module';
     AuthModule, ClinicalHistoryModule, PetModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, DateTimeScalar],
 })
 export class AppModule {}

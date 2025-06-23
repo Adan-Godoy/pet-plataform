@@ -59,7 +59,7 @@ message PetResponse {
   string id = 1;
   string name = 2;
   string breed = 3;
-  int32 age = 4;
+  optional int32 age = 4;
   string photoUrl = 5;
   string ownerId = 6;
 }

@@ -24,6 +24,7 @@
     "amqplib": "^0.10.8",
     "apollo-server-express": "^3.13.0",
     "graphql": "^16.11.0",
+    "graphql-scalars": "^1.24.2",
     "graphql-tools": "^8.3.20",
     "reflect-metadata": "^0.1.14",
     "rxjs": "^7.8.1"

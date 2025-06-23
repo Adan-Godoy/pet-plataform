@@ -85,7 +85,7 @@ export class PetGraphQLService implements OnModuleInit {
     petDto.id = grpcResponse.id;
     petDto.name = grpcResponse.name;
     petDto.breed = grpcResponse.breed;
-    petDto.age = grpcResponse.age;
+    petDto.age = grpcResponse.age ?? 0;
     petDto.photoUrl = grpcResponse.photoUrl;
     petDto.ownerId = grpcResponse.ownerId;
     return petDto;
