@@ -1,0 +1,1 @@
+MONGO_URI=mongodb+srv://adangodoy:7Cnu5x3hHmjDfoQ8@banco.3zn6kge.mongodb.net/mascotas
