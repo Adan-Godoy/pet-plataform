@@ -10,23 +10,44 @@ export class ClinicalHistoryService {
     @Inject('CLINICAL_HISTORY_SERVICE') private client: ClientProxy,
   ) {}
 
+ 
+
   async create(input: CreateClinicalHistoryDto) {
-    return await lastValueFrom(this.client.send('createClinicalHistory', input));
+    // 1. El patrón debe ser un objeto que coincida con @MessagePattern
+    const pattern = { cmd: 'create_clinical_history' };
+    const payload = input;
+    
+    return await lastValueFrom(this.client.send(pattern, payload));
   }
 
   async findByPetId(petId: string) {
-    return await lastValueFrom(this.client.send('getClinicalHistoryByPetId', petId));
+    const pattern = { cmd: 'get_clinical_history_by_pet' };
+    const payload = petId;
+
+    return await lastValueFrom(this.client.send(pattern, payload));
   }
 
   async findByUserId(userId: string) {
-    return await lastValueFrom(this.client.send('getClinicalHistoryByUserId', userId));
+    const pattern = { cmd: 'get_clinical_history_by_user' };
+    const payload = userId;
+
+    return await lastValueFrom(this.client.send(pattern, payload));
   }
 
   async update(id: string, input: UpdateClinicalHistoryDto) {
-    return await lastValueFrom(this.client.send('updateClinicalHistory', { id, ...input }));
+    const pattern = { cmd: 'update_clinical_history' };
+    // 2. El payload debe ser un objeto con 'id' y 'dto', como espera el microservicio
+    const payload = { id, dto: input }; 
+
+    return await lastValueFrom(this.client.send(pattern, payload));
   }
 
   async remove(id: string) {
-    return await lastValueFrom(this.client.send('deleteClinicalHistory', id));
+    const pattern = { cmd: 'delete_clinical_history' };
+    const payload = id;
+
+    // Usamos send para esperar una respuesta (o un error), lo cual es bueno.
+    await lastValueFrom(this.client.send(pattern, payload));
+    return true; // Si no hay error, la operación fue exitosa.
   }
 }
