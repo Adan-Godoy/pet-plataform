@@ -1,0 +1,22 @@
+# gateway/Dockerfile.dev
+FROM node:20-alpine
+
+# El WORKDIR es importante
+WORKDIR /app
+
+# Copia solo package.json y package-lock.json para aprovechar el caché de Docker.
+# Si estos archivos no cambian, Docker no volverá a ejecutar "npm install".
+COPY package*.json ./
+
+# Instala las dependencias
+RUN npm install
+
+# Copia el resto de los archivos. Si usas volúmenes, esto es principalmente
+# para tener una copia base en caso de que el volumen no se monte.
+COPY . .
+
+# Expone el puerto del gateway
+EXPOSE 3000
+
+# El comando para desarrollo, que generalmente usa ts-node o nodemon.
+CMD ["npm", "run", "start:dev"]

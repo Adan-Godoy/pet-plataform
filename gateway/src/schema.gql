@@ -1,0 +1,108 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type ClinicalHistoryDto {
+  date: DateTime!
+  description: String!
+  diagnosis: String!
+  id: ID!
+  petId: String!
+  treatmentType: String!
+  userId: String!
+  veterinarianName: String!
+  veterinaryClinic: String!
+}
+
+input CreateClinicalHistoryDto {
+  date: DateTime!
+  description: String!
+  diagnosis: String!
+  petId: String!
+  treatmentType: String!
+  userId: String!
+  veterinarianName: String!
+  veterinaryClinic: String!
+}
+
+input CreatePetInput {
+  age: Int!
+  breed: String!
+  name: String!
+  ownerId: ID!
+  photoUrl: String
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+input LoginDto {
+  email: String!
+  password: String!
+}
+
+type LoginResponseDto {
+  accessToken: String!
+}
+
+type Mutation {
+  createClinicalHistory(input: CreateClinicalHistoryDto!): ClinicalHistoryDto!
+  createPet(input: CreatePetInput!): Pet!
+  deleteClinicalHistory(id: String!): Boolean!
+  deletePet(id: ID!): Boolean!
+  login(input: LoginDto!): LoginResponseDto!
+  register(input: RegisterDto!): UserDto!
+  updateClinicalHistory(id: String!, input: UpdateClinicalHistoryDto!): ClinicalHistoryDto!
+  updatePet(id: ID!, input: UpdatePetInput!): Pet!
+}
+
+type Pet {
+  age: Int!
+  breed: String!
+  id: ID!
+  name: String!
+  ownerId: ID!
+  photoUrl: String
+}
+
+type Query {
+  getClinicalHistoryByPetId(petId: String!): [ClinicalHistoryDto!]!
+  getClinicalHistoryByUserId(userId: String!): [ClinicalHistoryDto!]!
+  getProfile(userId: String!): UserDto!
+  pet(id: ID!): Pet
+  petsByOwner(ownerId: ID!): [Pet!]!
+}
+
+input RegisterDto {
+  email: String!
+  lastName: String!
+  name: String!
+  password: String!
+}
+
+input UpdateClinicalHistoryDto {
+  date: DateTime
+  description: String
+  diagnosis: String
+  petId: String
+  treatmentType: String
+  userId: String
+  veterinarianName: String
+  veterinaryClinic: String
+}
+
+input UpdatePetInput {
+  age: Int
+  breed: String
+  name: String
+  photoUrl: String
+}
+
+type UserDto {
+  email: String!
+  id: ID!
+  lastName: String
+  name: String!
+}

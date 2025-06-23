@@ -1,0 +1,113 @@
+
+
+services:
+  #--- Dependencias de Infraestructura ---
+  db_users:
+    image: postgres:14
+    container_name: db_users
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: users
+    volumes:
+      - pgdata_users:/var/lib/postgresql/data
+    # No es necesario especificar la red, Docker lo hará por ti
+
+  db_clinical:
+    image: postgres:15-alpine
+    container_name: db_clinical
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: clinical_history
+    volumes:
+      - pgdata_clinical:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+
+  #--- Microservicios ---
+  user-microservice:
+    build:
+      context: ./user-microservice-petproject
+      dockerfile: Dockerfile.dev
+    container_name: user-microservice
+    restart: always
+    depends_on:
+      - db_users
+    environment:
+      DB_HOST: db_users
+      DB_PORT: 5432
+
+  clinical-history:
+    build:
+      context: ./clinical-history-microservice-petproject
+      dockerfile: Dockerfile.dev
+    container_name: clinical-history
+    restart: always
+    depends_on:
+      - db_clinical
+      - rabbitmq
+    environment:
+      DB_HOST: db_clinical
+      DB_PORT: 5432
+      RABBITMQ_URL: amqp://user:password@rabbitmq:5672
+  
+  # ... ms-mascotas ...
+
+  ms-mascotas:
+    build:
+      context: ./ms-mascotas # <- Ruta correcta según tu imagen
+      # Asumimos que también tiene un Dockerfile.dev o simplemente Dockerfile
+    container_name: ms-mascotas
+    restart: unless-stopped
+    ports:
+      # Exponer este puerto es opcional, pero útil para probar el microservicio directamente
+      - "9090:9090" 
+    env_file:
+      - .env # ¡IMPORTANTE! Lee el paso 3 sobre cómo manejar secretos
+
+
+  #--- API Gateway ---
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile.dev
+    container_name: gateway
+    ports:
+      - '3000:3000'
+    environment:
+      RABBITMQ_URL: amqp://user:password@rabbitmq:5672
+      USER_GRPC_URL: user-microservice:50051
+      PET_GRPC_URL: ms-mascotas:9090
+    depends_on:
+      - rabbitmq
+      - user-microservice
+      - clinical-history
+
+  #--- Servicio de Tests para 'ms-mascotas' (opcional) ---
+  tests-mascotas:
+    build:
+      context: ./ms-mascotas
+      # Asumo que tu Dockerfile de ms-mascotas tiene una etapa llamada 'test_and_package'
+      target: test_and_package
+    container_name: ms-mascotas-tests
+    # Este servicio solo se ejecutará si lo pides explícitamente
+    profiles:
+      - test
+    env_file:
+      - .env
+
+#--- Definición de Volúmenes ---
+volumes:
+  pgdata_users:
+  pgdata_clinical:
+

@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: clinical_history
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - petproject-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    networks:
+      - petproject-network
+
+  clinical-history:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: clinical-history
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_NAME: clinical_history
+      JWT_SECRET: my-super-secret
+      RABBITMQ_URL: amqp://user:password@rabbitmq:5672
+    depends_on:
+      - rabbitmq
+      - db
+    networks:
+      - petproject-network
+
+volumes:
+  postgres-data:
+
+networks:
+  petproject-network:
+    driver: bridge # Especificar el driver es una buena práctica

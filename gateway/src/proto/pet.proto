@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package pet; 
+
+// Opción para que gRPC genere el código en el paquete Java correcto.
+option java_package = "com.petplataform.msmascotas.grpc.generated";
+option java_multiple_files = true;
+
+// Importamos Empty para respuestas vacías (como en Delete)
+import "google/protobuf/empty.proto";
+
+// El servicio que expondrá nuestro microservicio de mascotas
+service PetService {
+  // RPC para crear una nueva mascota
+  rpc CreatePet(CreatePetRequest) returns (PetResponse);
+
+  // RPC para obtener una mascota por su ID
+  rpc GetPetById(PetIdRequest) returns (PetResponse);
+
+  // RPC para obtener todas las mascotas de un dueño (owner)
+  rpc GetPetsByOwner(OwnerIdRequest) returns (PetListResponse);
+
+  // RPC para actualizar los datos de una mascota
+  rpc UpdatePet(UpdatePetRequest) returns (PetResponse);
+
+  // RPC para eliminar una mascota (buena práctica tenerlo)
+  rpc DeletePet(PetIdRequest) returns (google.protobuf.Empty);
+}
+
+// === Mensajes de Petición (Request) ===
+
+message CreatePetRequest {
+  string name = 1;
+  string breed = 2; // Raza
+  int32 age = 3;
+  optional string photoUrl = 4;
+  string ownerId = 5; // ID del dueño, viene del microservicio de usuarios
+}
+
+message PetIdRequest {
+  string id = 1; // ID de la mascota en MongoDB
+}
+
+message OwnerIdRequest {
+  string ownerId = 1; // ID del dueño
+}
+
+message UpdatePetRequest {
+  string id = 1;
+  optional string name = 2;
+  optional string breed = 3;
+  optional int32 age = 4;
+  optional string photoUrl = 5;
+}
+
+// === Mensajes de Respuesta (Response) ===
+
+message PetResponse {
+  string id = 1;
+  string name = 2;
+  string breed = 3;
+  int32 age = 4;
+  string photoUrl = 5;
+  string ownerId = 6;
+}
+
+message PetListResponse {
+  repeated PetResponse pets = 1;
+}

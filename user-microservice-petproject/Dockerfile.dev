@@ -1,0 +1,23 @@
+# Usa una imagen oficial de Node
+FROM node:18
+
+# Crea el directorio de trabajo
+WORKDIR /app
+
+# Copia los archivos de tu proyecto
+COPY package*.json ./
+RUN npm install
+RUN npm install -g @nestjs/cli
+
+COPY . .
+
+# Expone el puerto que Nest usa por defecto
+EXPOSE 50051
+
+
+# Usa el script definido en package.json
+CMD ["npm", "run", "start:dev"]
+
+
+
+

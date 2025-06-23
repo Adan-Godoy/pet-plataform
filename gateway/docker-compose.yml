@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  # Servicio del API Gateway
+  gateway:
+    # Usará el Dockerfile.dev que está en la misma carpeta
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: gateway
+    ports:
+      # Expone el puerto 3000 de tu gateway a tu máquina local
+      - '3000:3000'
+    environment:
+      # Estas variables apuntan a los NOMBRES DE SERVICIO de los otros contenedores.
+      # Docker usará la red compartida para encontrar sus IPs.
+      - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
+      - USER_GRPC_URL=user-microservice:50051
+      - PET_GRPC_URL=ms-mascotas:9090
+    volumes:
+      # Mapea tu código local para que los cambios se reflejen en tiempo real (hot-reloading).
+      - .:/app
+      # Truco para no sobreescribir el node_modules del contenedor con el de tu máquina.
+      - /app/node_modules
+    networks:
+      # Conecta este contenedor a la red externa donde viven los demás servicios.
+      - petproject-network
+
+networks:
+  # Le decimos a Docker Compose que no cree esta red, sino que use una que ya existe.
+  petproject-network: {}

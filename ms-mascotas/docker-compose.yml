@@ -1,0 +1,24 @@
+
+
+services:
+  # Nombre del servicio dentro de Docker Compose
+  ms-mascotas:
+    # Le dice a Compose que construya la imagen desde el directorio actual (donde está el Dockerfile)
+    build: .
+    container_name: ms-mascotas-service
+    ports:
+      # Mapea el puerto 9090 de tu máquina al puerto 9090 del contenedor
+      - "9090:9090"
+    restart: unless-stopped
+    environment:
+      # Aquí defines la variable de entorno con tu URI de conexión a MongoDB Atlas.
+      # ¡IMPORTANTE! Reemplaza esto con tu cadena de conexión real.
+      - MONGO_URI=mongodb+srv://adangodoy:7Cnu5x3hHmjDfoQ8@banco.3zn6kge.mongodb.net/mascotas
+  tests:
+    build:
+      context: .
+      target: test_and_package # Le dice que se detenga después de correr mvn verify
+    container_name: ms-mascotas-tests
+    # Solo se ejecutará si activamos el perfil 'test'
+    profiles:
+      - test

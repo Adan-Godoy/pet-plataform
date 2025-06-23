@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:14
+    container_name: postgres-user
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: users
+    ports:
+      - '5433:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - petproject-network
+
+  user-microservice:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: user-microservice
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - '50051:50051'
+    env_file:
+      - .env
+    environment:
+      DB_HOST: db
+    volumes:
+      - .:/app
+    command: npm run start:dev
+    networks:
+      - petproject-network
+
+volumes:
+  pgdata:
+
+networks:
+  petproject-network:
+    external: true
